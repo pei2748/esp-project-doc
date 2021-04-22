@@ -1,0 +1,172 @@
+\documentclass{sig-alternate}
+%[preprint]
+% The following \documentclass options may be useful:
+%
+% 10pt          To set in 10-point type instead of 9-point.
+% 11pt          To set in 11-point type instead of 9-point.
+% authoryear    To obtain author/year citation style instead of numeric.
+
+\makeatletter
+\def\@copyrightspace{\relax}
+\makeatother
+
+\usepackage[nynorsk,british,UKenglish,USenglish,english,american]{babel}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+%\usepackage{gnuplot-lua-tikz}
+\usepackage{color}
+\usepackage{tabularx}
+\usepackage{fixltx2e}
+%% \usepackage{dblfloatfix}
+\usepackage{varwidth} % http://ctan.org/pkg/varwidth
+\usepackage{listings}
+\usepackage{url}
+\usepackage{balance}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{caption}
+
+\lstset{
+%  backgroundcolor=\color{yellow!20},%
+  basicstyle=\small\ttfamily,%
+  numbers=left, numberstyle=\tiny%
+}
+
+\newtheorem{thm}{Problem}
+\newdef{definition}{Definition}
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
+\usepackage{xcolor}
+\usepackage{framed}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fancyvrb}
+\usepackage{comment}
+
+\begin{document}
+
+\title{\Large\bf Plan of Design Space Exploration for mriq accelerator}
+\subtitle{\normalsize COMS E6901 2020 Summer Research}
+
+\numberofauthors{1}
+\author{
+\alignauthor
+Pei Liu\\
+\vspace{0.2cm}
+       \email{pl2748@columbia.edu}
+}
+
+\vspace{-2cm}
+
+\maketitle
+
+\vspace{-2cm}
+
+\begin{abstract}
+{\small\em
+  This plan focuses on design space exploration over the previously designed accelerator for computing MRI-Q matrix.
+}
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+Some amount of design space explorations (DSE) for the mriq accelerator have been done. 
+To prepare the mriq accelerator to go public release, we need to do some further work. For example, increase the configuration ability of this accelerator. The initially designed accelerator only works for the small and large datasets from the benchmark, but not the $128*128*128$ dataset in Table.~\ref{tab-1}. We also want this accelerator to work for any input image sizes.
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{c|c|c|c}
+    \hline
+    \hline
+       name  & image size & \# of pixels & K-space dimension  \\
+        \hline
+    \hline
+        small  & 32*32*32 & 32768 & 3072 \\
+        large & 64*64*64 & 262144 & 2048\\
+        128*128*128 & 128*128*128 & 2097152 & 2097152\\
+        \hline
+        \hline
+    \end{tabular}
+    \caption{Datasets of MRIQ from Parboil Benchmark}
+    \label{tab-1}
+\end{table}
+
+\subsection{DSE finished}\label{sec:arch}
+\label{sec:milestones}
+
+\vspace{-0.1in}
+\begin{enumerate}
+\setlength\itemsep{-0.15em}
+  \item Modifying PLM blocks. 
+  \vspace{2mm}
+  \\
+  The PLM blocks, both names and sizes, were changed from the automatically generated code. For different designs, I defined different PLM blocks. But it is not configurable to work for different datasets.
+  \item Optimizing the fixed point datatype
+   \vspace{2mm}
+   \\
+    I have tuned both the word length and integer length of the fixed point datatypes. The area and latency have improved by 30\% and 13\%, respectively.
+
+  \item Adding ports 
+    \vspace{2mm}
+  \\
+  For $dma = 64$ design, increasing the reading and writing ports from 2 to 8 improve the latency by 2\%. 
+  \item Loop Unrolling
+    \vspace{2mm}
+  \\
+  Loop unrolling for one loop in the compute kernel didn't make any progress for latency. The reason is the loop has data dependency between each iteration.
+  \item Optimize computation code
+    \vspace{2mm}
+  \\
+  A sine look-up table is defined to compute the sine and cosine functions for fixed-point datatypes since the FPGA doesn't support the native triangle functions. I reduced the sine look-up table size from 20 to 10. The reduction of area is negligible since the registers used to store the table only accounts for a tiny amount.
+  \item In-place output storage
+    \vspace{2mm}
+  \\
+ Since there are very small amount of output data points need to be stored in PLM. So the performance improvement is slight.
+\end{enumerate}
+
+\section{Specification}
+\subsection{DSE plan to do}
+\begin{enumerate}
+\setlength\itemsep{-0.15em}
+\item Try more extensive WL and IL range. Find the optimal WL and IL setting, which works for any random inputs.
+\item Modifying compute kernel code to exploit loop unrolling.
+\item Optimize the algorithm of sine function which is used in the compute kernel.
+\item Use ``ping-pong" buffer to make the value of numX and numK both configurable.
+\item Make both K space size and pixel space size configurable.
+\item Optimizing and defining PLM blocks to be configurable for any dataset sizes.
+\item Split the input image among several accelerator instances on ESP for some enormous datasets.
+\end{enumerate}
+
+\subsection{Critical points}
+
+\begin{enumerate}
+\setlength\itemsep{-0.15em}
+\item Organize various designs by editing the project.tcl, mriq\_directives.hpp, and memlist.txt files.
+\end{enumerate}
+
+%Bibliography
+{\small
+\balance
+%\bibliographystyle{abbrv}
+\bibliographystyle{unsrt}
+\bibliography{ref}
+}
+
+
+
+% If you need to add an appendix with large figures or table use the following
+% code:
+
+%% \newpage
+%% \onecolumn{
+%% \centering
+%% \section*{APPENDIX}
+%% \vspace{0.5in}
+
+%% % Add your Appendix text and figures here.
+
+%% }
+
+\end{document}
