@@ -14,7 +14,7 @@ $(PUBPDF): $(PUBTEX) $(PUBDEPS) $(PUBBIB)
 	pdflatex $(PDFLATEX_OPTS) $(@:%.pdf=%)
 
 clean:
-	rm -rf *.log *.aux *.blg *.bbl
+	rm -rf *.log *.aux *.blg *.bbl *.pdf
 	$(RM) *.dep *.dpth *.figlist *.makefile
 
 distclean: clean
