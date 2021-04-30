@@ -1,92 +1,64 @@
-\documentclass{sig-alternate}
-%[preprint]
-% The following \documentclass options may be useful:
-%
-% 10pt          To set in 10-point type instead of 9-point.
-% 11pt          To set in 11-point type instead of 9-point.
-% authoryear    To obtain author/year citation style instead of numeric.
+\documentclass[sigconf, nonacm, screen]{acmart}
 
-\makeatletter
-\def\@copyrightspace{\relax}
-\makeatother
-
-\usepackage[nynorsk,british,UKenglish,USenglish,english,american]{babel}
-
-\usepackage{graphicx}
-\usepackage{tikz}
-\usepackage{color}
-\usepackage{tabularx}
-\usepackage{fixltx2e}
-\usepackage{varwidth} % http://ctan.org/pkg/varwidth
-\usepackage{listings}
-\usepackage{url}
-\usepackage{balance}
-\usepackage{amsmath}
-\usepackage{enumitem}
+%%
 \usepackage{subcaption}
-\usepackage{times}
-\usepackage{fancyhdr,graphicx,amsmath,amssymb}
-\usepackage{xcolor}
-\usepackage{framed}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\usepackage{fancyvrb}
-\usepackage{comment}
-\usepackage{url}
 
-\lstset{
-%  backgroundcolor=\color{yellow!20},%
-  basicstyle=\small\ttfamily,%
-  numbers=left, numberstyle=\tiny%
-}
+%%
+\AtBeginDocument{
+  \providecommand\BibTeX{{
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
 
-\newtheorem{thm}{Problem}
-\newdef{definition}{Definition}
-\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{lemma}[theorem]{Lemma}
-
-
+%%
 \begin{document}
 
+%%
 \title{Design and Integration of an Accelerator for MRI with ESP}
-\subtitle{COMS E6868 - Embedded Scalable Platforms - Spring 2020}
+\subtitle{Embedded Scalable Platforms (COMS E6868), Columbia University, Spring 2020}
 
-\numberofauthors{1}
-\author{
-\alignauthor
-Pei Liu\\
+%%
+\author{Pei Liu}
+\authornote{Project mentor: Davide Giri (davide.giri@columbia.edu). Instructor:
+  Luca Carloni (luca@cs.columbia.edu).}
 \email{pl2748@columbia.edu}
+\affiliation{
+  \institution{Department of Computer Science, Columbia University}
+  \city{New York}
+  \country{USA}
 }
 
-\maketitle
-
+%%
 \begin{abstract}
-
-I designed a hardware accelerator to compute the Magnetic Resonance Imaging Q
-matrix, and I performed a design-space exploration. For this purpose I leveraged
-the ESP flow for the design of SystemC accelerators with Cadence Stratus
-HLS. Then, with the ESP SoC flow, I integrated various versions of the
-accelerator in full SoCs and I evaluated these SoCs with RTL simulation of
+We designed a hardware accelerator to compute the Magnetic Resonance Imaging Q
+matrix, and we performed a design-space exploration. For this purpose we
+leveraged the ESP flow for the design of SystemC accelerators with Cadence
+Stratus HLS. Then, with the ESP SoC flow, we integrated various versions of the
+accelerator in full SoCs and we evaluated these SoCs with RTL simulation of
 bare-metal programs and on FPGA with Linux applications.
-
 \end{abstract}
 
-\input{sections/introduction}
-\input{sections/specifications}
-\input{sections/progress}
-\input{sections/dse}
-\input{sections/conclusion}
-\input{sections/limitations}
-\input{sections/future_work}
+%%
+\maketitle
 
-% Bibliography
-{\small
-\balance
-%\bibliographystyle{abbrv}
-\bibliographystyle{unsrt}
+\input{sections/final/intro}
+\input{sections/final/specs}
+\input{sections/final/progress}
+\input{sections/final/dse}
+\input{sections/final/conclusion}
+\input{sections/final/limitations}
+\input{sections/final/future_work}
+
+%%
+%% \begin{acks}
+%% Optional acks
+%% \end{acks}
+
+%%
+\bibliographystyle{ACM-Reference-Format}
 \bibliography{ref}
-}
 
+%%
+%%\appendix
+%%\section{section title}
 
 \end{document}
+\endinput

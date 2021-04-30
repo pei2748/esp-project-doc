@@ -1,27 +1,29 @@
-PUBTEX := proposal.tex midterm.tex final.tex
-PUBBIB := ref.bib
-PUBPDF := $(PUBTEX:%.tex=%.pdf)
+SRCS := proposal.tex midterm.tex final.tex
+PDFS = ${SRCS:%.tex=%.pdf}
+SECTIONS = $(wildcard sections/*/*.tex)
+FIGURES = $(wildcard figures/*)
+BIB = ref.bib
 
-all: $(PUBPDF)
+RM = rm -rf
 
-.SUFFIXES: .aux .bbl .blg .dvi .log
-PDFLATEX_OPTS := -interaction=nonstopmode -halt-on-error -file-line-error -shell-escape
+all: $(PDFS)
 
-$(PUBPDF): $(PUBTEX) $(PUBDEPS) $(PUBBIB)
-	pdflatex -draftmode $(PDFLATEX_OPTS) $(@:%.pdf=%)
-	bibtex $(@:%.pdf=%)
-	pdflatex -draftmode $(PDFLATEX_OPTS) $(@:%.pdf=%)
-	pdflatex $(PDFLATEX_OPTS) $(@:%.pdf=%)
+%.pdf: %.tex $(SECTIONS) $(FIGURES) $(BIB) ACM-Reference-Format.bst acmart.cls
+	pdflatex $<
+	@if test -f $(@:.pdf=.aux) &&  test `grep citation $(@:.pdf=.aux) | wc -l` -ge 1; then bibtex $(@:.pdf=); fi
+	pdflatex $<
+	pdflatex $<
 
 clean:
-	rm -rf *.log *.aux *.blg *.bbl *.pdf
-	$(RM) *.dep *.dpth *.figlist *.makefile
+	$(RM)  *.log *.aux *.cfg *.glo *.idx *.toc *.ilg *.ind *.out *.lof \
+	*.lot *.bbl *.blg *.gls *.cut *.hd *.dvi *.ps *.thm *.tgz *.zip    \
+	*.rpi *.pdf auto
 
 distclean: clean
-	rm -rf *.pdf
+	$(RM) *.pdf
 
-view: $(PUBPDF)
-	evince $(PUBPDF) &
+view: $(PDFS)
+	evince $(PDFS) &
 
 .PHONY: all clean distclean view
 
