@@ -1,0 +1,11 @@
+\section{Limitations of The Work}
+
+We don't compare our acceleration result with the state-of-the-art MRI image
+recustruction performance since we only accelerate one part of the iamge
+reconstruction. The whole image recustruction of non-Cartician scanning contains
+three steps: computing Q-matrix, computing the vector $\mathbf{F}^{H}
+\mathbf{d}$, and finding the image iteratively via a conjugate gradient linear
+solver. The first two steps are very similiar.~\cite{stone2008accelerating}
+Since our accelerator only accelerate the first step, we can't evaluate the
+reconstructed image quality and the performance with other works. Also, we don't
+know the error tolerance of the first step.

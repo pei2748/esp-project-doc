@@ -1,0 +1,11 @@
+\section{Conclusion}
+
+In this project, I have designed a set of accelerators using ESP to compute the
+Q matrix for MRI image reconstruction. Any arbitrary input data sizes can find
+an accelerator to work with. The accelerators are tested on the FPGA through
+both bare-metal application and Linux application. I have also done different
+levels of design space exploration. Customizing PLM designs and reducing the
+fixed point precision can reduce both area and latency. Loop-unrolling and
+loop-pipelining in the main computation-intensive loop can reduce latency
+proportionally when compute kernel is dominating the whole procedure.
+
