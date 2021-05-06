@@ -168,7 +168,7 @@ number of reading ports.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\columnwidth]{figures/Pareto-curve-A0.png}
+    \includegraphics[width=\columnwidth]{figures/Pareto-curve-A0}
     \caption{Pareto curve of 6 designs of A0}
     \label{fig-paral}
 \end{figure}
@@ -179,7 +179,7 @@ shouldn't have any effect, shown in Fig.\ref{fig-a1-pareto}.\\
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\columnwidth]{figures/Pareto-curve-A1.png}
+    \includegraphics[width=\columnwidth]{figures/Pareto-curve-A1}
     \caption{Pareto curve of 6 designs of A1}
     \label{fig-a1-pareto}
 \end{figure}
@@ -190,16 +190,16 @@ shouldn't have any effect, shown in Fig.\ref{fig-a1-pareto}.\\
 
 By invoking linux on FPGA, we collected both the software execution time running
 on the Ariane core and the execution time running on the MRI-Q accelerator. For
-A0 architecture, data is shown in Fig.\ref{fig-d32-64} for 32x32x32 (D32) and
-64x64x64 (D64) dataset.  The right y-axis shows the speed-up of the two
+A0 architecture, data is shown in Fig.\ref{fig-d32-64} for 32x32x32 (DSmall) and
+64x64x64 (DLarge) dataset.  The right y-axis shows the speed-up of the two
 testing. The speed up is greater than 5000 for both datasets when parallelism
-level is 16. The testing result of D32 shows a slightly higher speed-up than D64
-is because that numK of D32 is 1.5X of D64. Increasing parallelism in compute
+level is 16. The testing result of DSmall shows a slightly higher speed-up than DLarge
+is because that numK of DSmall is 1.5X of DLarge. Increasing parallelism in compute
 can improve latency, same as the extracted data from the synthesized RTL.\\
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\columnwidth]{figures/a0-both.png}
+    \includegraphics[width=\columnwidth]{figures/a0-both}
     \caption{Latency comparison of D32 and D64 Dataset}
     \label{fig-d32-64}
 \end{figure}
@@ -222,14 +222,14 @@ arbitrary input image size.\\
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\columnwidth]{figures/a1-vary-x.png}
+    \includegraphics[width=\columnwidth]{figures/a1-vary-x}
     \caption{Latency with varying numX (numK=4K)}
     \label{fig-a1-x}
 \end{figure}
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\columnwidth]{figures/a1-vary-k.png}
+    \includegraphics[width=\columnwidth]{figures/a1-vary-k}
     \caption{Latency with varying numK (numX=4)}
     \label{fig-a1-k}
 \end{figure}
