@@ -26,4 +26,3 @@ view: $(PDFS)
 	evince $(PDFS) &
 
 .PHONY: all clean distclean view
-

@@ -2,6 +2,7 @@
 
 %%
 \usepackage{subcaption}
+\usepackage{booktabs}
 
 %%
 \AtBeginDocument{
@@ -17,8 +18,8 @@
 
 %%
 \author{Pei Liu}
-\authornote{Project mentor: Davide Giri (davide.giri@columbia.edu). Instructor:
-  Luca Carloni (luca@cs.columbia.edu).}
+\thanks{Project mentor: Davide Giri (davide.giri@columbia.edu). Instructor:
+  Prof. Luca Carloni (luca@cs.columbia.edu).}
 \email{pl2748@columbia.edu}
 \affiliation{
   \institution{Department of Computer Science, Columbia University}
@@ -28,12 +29,12 @@
 
 %%
 \begin{abstract}
-We designed a hardware accelerator to compute the Magnetic Resonance Imaging Q
-matrix, and we performed a design-space exploration. For this purpose we
-leveraged the ESP flow for the design of SystemC accelerators with Cadence
-Stratus HLS. Then, with the ESP SoC flow, we integrated various versions of the
-accelerator in full SoCs and we evaluated these SoCs with RTL simulation of
-bare-metal programs and on FPGA with Linux applications.
+In this project we design a hardware accelerator for the Magnetic Resonance
+Imaging domain. For this purpose, we leverage the ESP flow for the design of
+SystemC accelerators with Cadence Stratus HLS. First, we perform a design-space
+exploration for the accelerator. Then, with the ESP SoC flow, we integrate
+various versions of the accelerator in full SoCs, that we evaluate with RTL
+simulation of bare-metal programs and on FPGA with Linux applications.
 \end{abstract}
 
 %%
@@ -41,11 +42,9 @@ bare-metal programs and on FPGA with Linux applications.
 
 \input{sections/final/intro}
 \input{sections/final/specs}
-\input{sections/final/progress}
-\input{sections/final/dse}
+\input{sections/final/design}
+\input{sections/final/evaluation}
 \input{sections/final/conclusion}
-\input{sections/final/limitations}
-\input{sections/final/future_work}
 
 %%
 %% \begin{acks}

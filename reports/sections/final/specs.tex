@@ -1,83 +1,104 @@
-\section{Specification}
+\section{Specifications}
 
-The algorithm for computing MRI-Q matrix is shown in Fig.~\ref{fig-1}. We want
-to accelerate the whole computation, mainly by loop unrolling and pipelining the
-inner for-loop. The programmer view algorithm C code and input dataset come from
-the Parboil benchmark suit~\cite{Rub1}. In this project, we will design
-accelerators which can accomodate the three datasets provided by Parboil
-benchmark, and make it capable of dealing with input images with arbitray size.
+\subsection{Reference Application}
 
-\subsection{Assessment}
+The MRI-Q algorithm is shown in \figurename~\ref{fig:algo}. It is part of the
+Parboil Benchmarks~\cite{stratton2012parboil}, and it corresponds to equation 3
+in the MRI reconstruction paper by \emph{Stone et
+  al.}~\cite{stone2008accelerating}.
+%
+As our reference application, we use the C implementation of the algorithm and
+the input datasets provided as part of the Parboil benchmarks. The datasets are
+listed in Table~\ref{tab:datasets}.
 
-We aim to design accelerators which can implement Q-matrix computation for any
-arbitrary input image sizes. The first goal is correctness. The Q-matrix
-computed by our accelerator should match the Q-matrix computed by software
-program. We calculate the difference between every output and its golden output,
-and deem it as a match when the difference is less than a certain threshold,
-otherwise it is an error. And we also set an error\_rate. If it is within a
-specified small value, we deem that our accelerator meet the correctness
-goal. The second goal is performance. We will measure the acceleration of our
-accelerator compared to its software execution running on FPGA board. We want
-our accelerators can be integrated with both Ariane core and Leon3 core. The
-generated RTL through Stratus HLS can be integrated and prototyped on FPGA. We
-will design both baremetal application and Linux application, the accelerator
-should pass both tests. At last we want to collect speedup data which indicates
-the acceleration effect. In achieving the second goal, we will do some amount of
-design space exploration, which includes designing accelerators with different
-area and latency trade-offs.
-
-\subsection{Milestones}\label{sec:arch}
-\label{sec:milestones}
-
-\vspace{-0.1in}
-\begin{enumerate}
-\setlength\itemsep{-0.15em}
-
-\item Analysis of the algorithm and the programmer's implementation in C (by
-  Feb. 19)
-
-\item Learning two tutorials: "How to design an accelerator in SystemC
-    (Cadence Stratus HLS)" and "How to design a single-core
-    SoC"\cite{esp1}\cite{esp2}. (by Feb. 28)
-
-\item High-Level-Synthesis implementation in SystemC (by Mar. 11)
-
-  \vspace{-2mm}
-       \begin{itemize}
-            \item Transform programmer view algorithm to HLS-ready SystemC
-            \item Initial HLS using the Cadence Stratus tool
-       \end{itemize}
-
-\item Bare-metal and Linux application design (by Mar. 18)  
-
-\item Evaluation on an FPGA platform (by Mar. 25)
-
-\item Mid-term presentation and report (by Mar. 25)
-
-\item Design Space Exploration (by Apr. 15)
-
-\item Final refinement and analysis (by May 5)
-
-\item Final presentation ( May 14) and report (May 15)
-
-\end{enumerate}
-
-\subsection{Critical Aspects}
-\begin{enumerate}
-\setlength\itemsep{-0.15em}
-
-\item Use fixed-point datatype and various data conversions
-
-\item Implement sine and cosine functions in SystemC.
-
-\item Try different methods of optimization to reduce latency or decrease area.
-
-\end{enumerate}
 
 \begin{figure}[t]
 \centering
-\captionsetup{justification=centering, format=hang}
-\includegraphics[width=0.85\columnwidth]{figures/algorithm}
-\caption{Algorithm for computing MRI Q matrix~\cite{stone2008accelerating}}
-\label{fig-1}
+\includegraphics[width=\columnwidth]{figures/algorithm}
+\caption{Algorithm for computing the MRI-Q matrix.}
+\label{fig:algo}
 \end{figure}
+
+
+\begin{table}[t]
+\centering
+\begin{tabular}{c|c|c|c}
+\toprule
+\textbf{name} & \textbf{image size} & \textbf{\# of pixels} & \textbf{K-space dimension} \\
+\midrule
+small       & 32*32*32    & 32768   & 3072    \\
+large       & 64*64*64    & 262144  & 2048    \\
+128*128*128 & 128*128*128 & 2097152 & 2097152 \\
+\bottomrule
+\end{tabular}
+\caption{Datasets for MRI-Q from Parboil Benchmarks.}
+\label{tab:datasets}
+\end{table}
+
+
+\subsection{Accelerator and SoC Design}
+
+We design an accelerator that can work with any input image size, including the
+sizes of all three datasets in Table~\ref{tab:datasets}. We design the
+accelerator in SystemC for Cadence Stratus HLS. As a starting point, we use the
+ESP accelerator design flow to automatically generate a skeleton of accelerator,
+testbench, test applications, and device driver.
+%
+We perform a DSE leveraging multiple HLS knobs to obtain
+multiple implementation of the accelerator with different tradeoffs of area and
+latency.
+%
+Then, with the ESP SoC design flow, we create multiple SoCs containing one
+implementation of the accelerator and one processor core.
+
+\subsection{Evaluation}
+
+We will both validate and evaluate the accelerator in isolation with a SystemC
+testbench (used for the simulation of both behavioral SystemC and HLS-generated
+RTL), and as part of a full SoC with RTL simulation and FPGA prototyping. On the
+full SoC we execute either bare-metal programs or Linux applications (FPGA
+only).
+
+The validation consists in verifying the correctness of the
+accelerator output (the Q matrix) against the expected output computed by the
+reference application.
+
+To estimate performance and resources utilization we first use RTL simulation of
+the HLS-generated RTL and the Stratus HLS reports. Then we measure the
+accelerator performance on FPGA, and we collect the resource utilization
+information from the Vivado reports. On FPGA we compare the execution time of
+the accelerator with the time required for running the reference application on
+the processor core in the ESP SoC. This comparison provides an estimate of the
+accelerator speedup with respect to a software execution of the algorithm on a
+CPU.
+
+We collect performance estimates of different implementations of the
+accelerator obtained with the DSE.
+
+\subsection{Milestones}
+\label{sec:milestones}
+
+\begin{enumerate}
+
+\item Project proposal (by Feb. 5).
+  
+\item Reference application (by Feb. 12).
+
+\item ESP tutorials: \emph{``How to design a single-core SoC''}, and \emph{``How
+  to design an accelerator in SystemC (Cadence Stratus HLS)''} (by Feb. 19).
+
+\item Skeleton generation for accelerator and test apps (by Feb. 19)
+  
+\item Accelerator and test apps customization (by Mar. 11)
+
+\item SoC evaluation with RTL simulation (by Mar. 18)
+
+\item SoC evaluation with FPGA prototyping (by Mar. 25)
+  
+\item Midterm presentation and report (by Mar. 25)
+ 
+\item DSE and optimization (by May 13)
+
+\item Final presentation and report (by May 13)
+
+\end{enumerate}

@@ -9,3 +9,50 @@ fixed point precision can reduce both area and latency. Loop-unrolling and
 loop-pipelining in the main computation-intensive loop can reduce latency
 proportionally when compute kernel is dominating the whole procedure.
 
+%% Heterogeneous SoC architectures  . Hardware specialization
+%% can bring order-of-magnitude energy efficiency benefits. Designing an accelerator for
+%% computing the MRI-Q matrix  through ESP is a good way to learn ESP design
+%% methodology.
+
+\subsection{Critical Aspects}
+
+\begin{enumerate}
+
+\item Use fixed-point datatype and various data conversions
+
+\item Implement sine and cosine functions in SystemC.
+
+\item Try different methods of optimization to reduce latency or decrease area.
+
+\end{enumerate}
+
+\subsection{Limitations}
+
+We don't compare our acceleration result with the state-of-the-art MRI image
+recustruction performance since we only accelerate one part of the iamge
+reconstruction. The whole image recustruction of non-Cartician scanning contains
+three steps: computing Q-matrix, computing the vector $\mathbf{F}^{H}
+\mathbf{d}$, and finding the image iteratively via a conjugate gradient linear
+solver. The first two steps are very similiar.~\cite{stone2008accelerating}
+Since our accelerator only accelerate the first step, we can't evaluate the
+reconstructed image quality and the performance with other works. Also, we don't
+know the error tolerance of the first step.
+
+\subsection{Future Work}
+\begin{itemize}
+
+\item Design the same set of accelerators with Vivado HLS C/C++ through ESP for
+  the MRI-Q matrix computation. Compare the latency and area performance between
+  the generated RTLs through two different design flows.
+
+\item Design accelerators to compute the second step mentioned in Section 6.
+
+\item Compare with state-of-the-art
+
+\item Related work
+
+\item Implement the rest of the MRI application
+
+\item Dynamically select between A0 and A1, not at design time.
+  
+\end{itemize}

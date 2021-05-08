@@ -1,11 +1,13 @@
-\section{Design Space Exploration}
+\section{Evaluation}
+
+\subsection{Design Space Exploration}
 
 After we fixed the basic architectures of the design. We can try different HLS
 knobs to optimize our accelerator from area and latency directions. \\
 
-\subsection{Low Area Optimization}
+\subsubsection{Low Area Optimization}
 
-\subsubsection{Customize PLM}
+\paragraph{Customize PLM}
 
 We want to customize PLM size for two different input variables. k-space
 variables have the same size while sampling-space variables have the same size
@@ -19,7 +21,7 @@ ports. The number of reading ports of different PLMs depends on the parallelism
 level. If parallelism level is 4, we need to read 4 k-variables in parallel in
 the compute\_kernel process. So 4 reading ports are needed.\\
 
-\subsubsection{Fixed-Point Datatype Optimization}
+\paragraph{Fixed-Point Datatype Optimization}
 
 The MRI-Q accelerator deals with fixed point datatype. We can reduce fixed point
 precision to reduce both latency and area. When we have only one type of
@@ -101,7 +103,7 @@ latency (ns) &  1740 &  1540  & -11.49\% \\
     \label{tab-3}
 \end{table}
 
-\subsection{Low Latency Optimization}
+\subsubsection{Low Latency Optimization}
 
 We have two directions to reduce latency. The first one is to accelerate the
 loading and storing process. The second one is to accelerate the
@@ -186,7 +188,7 @@ shouldn't have any effect, shown in Fig.\ref{fig-a1-pareto}.\\
 
 
 
-\subsection{Results of Testing on FPGA}
+\subsection{FPGA Prototyping}
 
 By invoking linux on FPGA, we collected both the software execution time running
 on the Ariane core and the execution time running on the MRI-Q accelerator. For
@@ -200,7 +202,7 @@ can improve latency, same as the extracted data from the synthesized RTL.\\
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\columnwidth]{figures/a0-both}
-    \caption{Latency comparison of D32 and D64 Dataset}
+    \caption{Latency comparison of DSmall and DLarge Dataset}
     \label{fig-d32-64}
 \end{figure}
 
