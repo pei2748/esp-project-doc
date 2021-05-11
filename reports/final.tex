@@ -5,6 +5,12 @@
 \usepackage{booktabs}
 
 %%
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{listings}
+\lstset{basicstyle=\tiny}
+
+%%
 \AtBeginDocument{
   \providecommand\BibTeX{{
     \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
@@ -33,7 +39,7 @@ In this project we design a hardware accelerator for the Magnetic Resonance
 Imaging domain. For this purpose, we leverage the ESP flow for the design of
 SystemC accelerators with Cadence Stratus HLS. First, we perform a design-space
 exploration for the accelerator. Then, with the ESP SoC flow, we integrate
-various versions of the accelerator in full SoCs, that we evaluate with RTL
+various versions of the accelerator in full SoCs, which we evaluate with RTL
 simulation of bare-metal programs and on FPGA with Linux applications.
 \end{abstract}
 

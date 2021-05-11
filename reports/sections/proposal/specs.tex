@@ -1,16 +1,26 @@
 \section{Specification}
-The algorithm for computing MRI-Q matrix is shown in Fig.~\ref{fig-1}. We want to accelerate the whole computation, mainly by loop unrolling and pipelining the inner for-loop. The programmer view algorithm C code and input dataset come from the Parboil benchmark suit~\cite{Rub1}. In this project, we will design accelerators which can accomodate the three datasets provided by Parboil benchmark, and make it capable of dealing with input images with arbitray size.
+The algorithm for computing MRI-Q matrix is shown in Listing.~\ref{algo}~\cite{stone2008accelerating}. We want to accelerate the whole computation, mainly by loop unrolling and pipelining the inner for-loop. The programmer view algorithm C code and input dataset come from the Parboil benchmark suit~\cite{Rub1}. In this project, we will design accelerators which can accomodate the three datasets provided by Parboil benchmark, and make it capable of dealing with input images with arbitray size.
 
 
 \subsection{Assessment}
 We aim to design accelerators which can implement Q-matrix computation for any arbitrary input image sizes. The first goal is correctness. The Q-matrix computed by our accelerator should match the Q-matrix computed by software program. We calculate the difference between every output and its golden output, and deem it as a match when the difference is less than a certain threshold, otherwise it is an error. And we also set an error\_rate. If it is within a specified small value, we deem that our accelerator meet the correctness goal. The second goal is performance. We will measure the acceleration of our accelerator compared to its software execution running on FPGA board. We want our accelerators can be integrated with both Ariane core and Leon3 core. The generated RTL through Stratus HLS can be integrated and prototyped on FPGA. We will design both baremetal application and Linux application, the accelerator should pass both tests. At last we want to collect speedup data which indicates the acceleration effect. In achieving the second goal, we will do some amount of design space exploration, which includes designing accelerators with different area and latency trade-offs. 
-\begin{figure}[t]
-\centering
-\captionsetup{justification=centering, format=hang}
-\includegraphics[width=\columnwidth]{figures/algorithm-proposal}
-\caption{Algorithm for computing MRI Q matrix~\cite{stone2008accelerating}}
-\label{fig-1}
-\end{figure}
+
+\begin{lstlisting}[language=C, caption=Algorithm for computing MRI Q matrix, label=algo]
+for (m = 0; m < M; m++) {
+    phiMag[m] = rPhi[m]*rPhi[m] +
+                iPhi[m]*iPhi[m];
+}
+
+for (n = 0; n < 8*N; n++) {
+    for (m = 0; m < M; m++) {
+        exp = 2*PI*(kx[m] * x[n] +
+                    ky[m] * y[n] +
+                    kz[m] * z[n];
+        rQ[n] += phiMag[m] * cos(exp);
+        iQ[n] += phiMag[m] * sin(exp);
+    }
+}
+\end{lstlisting}
 
 \subsection{Milestones}\label{sec:arch}
 \label{sec:milestones}

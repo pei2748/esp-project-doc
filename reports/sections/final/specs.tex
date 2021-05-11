@@ -15,7 +15,7 @@ listed in Table~\ref{tab:datasets}.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/algorithm}
-\caption{Algorithm for computing the MRI-Q matrix.}
+\caption{Algorithm for computing the MRI-Q matrix}
 \label{fig:algo}
 \end{figure}
 
@@ -31,7 +31,7 @@ large       & 64*64*64    & 262144  & 2048    \\
 128*128*128 & 128*128*128 & 2097152 & 2097152 \\
 \bottomrule
 \end{tabular}
-\caption{Datasets for MRI-Q from Parboil Benchmarks.}
+\caption{Datasets for MRI-Q from Parboil Benchmarks}
 \label{tab:datasets}
 \end{table}
 
@@ -57,12 +57,12 @@ We will both validate and evaluate the accelerator in isolation with a SystemC
 testbench (used for the simulation of both behavioral SystemC and HLS-generated
 RTL), and as part of a full SoC with RTL simulation and FPGA prototyping. On the
 full SoC we execute either bare-metal programs or Linux applications (FPGA
-only).
-
+only).\\
+\\
 The validation consists in verifying the correctness of the
 accelerator output (the Q matrix) against the expected output computed by the
-reference application.
-
+reference application.\\
+\\
 To estimate performance and resources utilization we first use RTL simulation of
 the HLS-generated RTL and the Stratus HLS reports. Then we measure the
 accelerator performance on FPGA, and we collect the resource utilization
@@ -71,7 +71,7 @@ the accelerator with the time required for running the reference application on
 the processor core in the ESP SoC. This comparison provides an estimate of the
 accelerator speedup with respect to a software execution of the algorithm on a
 CPU.
-
+%
 We collect performance estimates of different implementations of the
 accelerator obtained with the DSE.
 

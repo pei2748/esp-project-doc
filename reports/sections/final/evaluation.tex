@@ -1,7 +1,7 @@
 \section{Evaluation}
 
 \subsection{Design Space Exploration}
-
+\label{dse}
 After we fixed the basic architectures of the design. We can try different HLS
 knobs to optimize our accelerator from area and latency directions. \\
 
@@ -29,7 +29,7 @@ fixed-point data representation and reduce the word length to 29, there are no
 errors in output data and both area and latency reduced. Further reduction in
 word length led to output errors. In order to further reduce the data width of
 the fixed-point representation, I analyzed all the testing data provided by the
-Parboil benchmark suite. Some data are bound to be very small value, for
+Parboil benchmarks. Some data are bound to be very small value, for
 example, the output of trigonometric functions is always less than 1, and some
 are large values. The range of data are shown in Table.\ref{tab-8}. I set two
 different fixed-point representations, shown in Table.\ref{tab-4}. We use
@@ -134,7 +134,7 @@ to the compute\_kernel won't work. \\ \\
 First, let's look at the Pareto curve of A0 architecture, which is shown in
 Fig.\ref{fig-paral}. The area and latency data is extracted from RTL synthesis
 results and RTL simulation results. The testing parameters are shown in Table
-\ref{tab-test-param}. The number in P-<number> indicates the unroll-factor. We
+\ref{tab-test-param}. The number in P-$<number>$ indicates the unroll-factor. We
 can see that latency is decreasing when we increase the parallelism level. We
 have tried unroll factor 4, 8, 16. In the compute\_kernel process, we have three
 tasks which can be pipelined. The first one is to read data from PLMs to
@@ -209,7 +209,7 @@ can improve latency, same as the extracted data from the synthesized RTL.\\
 For A1 architecture, latency results are shown in Fig.\ref{fig-a1-x} and
 Fig.\ref{fig-a1-k}. For 128x128x128 dataset, numX = numK = 2048K. To evaluation
 the speedup of accelerator with A1 architecture, I tested P4\_A1\_DMA64. As we
-discussed in section 3.3, parallel level in compute process won't affect latency
+discussed in Section~\ref{dse}, parallel level in compute process won't affect latency
 performance, so we choose the P4 accelerator. (It is possible that there is a
 parallelism level which is smaller than 4 and can also balance the loading and
 computing processes to further reduce area while with the same latency

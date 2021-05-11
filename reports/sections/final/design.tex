@@ -3,10 +3,10 @@
 \subsection{Reference Application}
 
 The Parboil benchmark provides datasets to run the programmer view
-implementation. In their github repository~\cite{Rub1}, we can find
+implementation. In their github repository~\cite{esp-release}, we can find
 documentation of this benchmark. After cloning the whole Parboil to local, under
 the Parboil folder, I ran the benchmark by the following command:
-$$\text{./parboil run mri-q cpu small}$$ Here, ``small“ means the dataset is
+$$\text{./parboil run mri-q cpu small}$$ Here, ``small" means the dataset is
 stored under ``small" folder, whose input image size is 32*32*32. I have also
 ran the test for ``large", whose input image size is 64*64*64. The image size of
 the largest dataset is 128*128*128.  The bigger the input data size, the higher
@@ -24,10 +24,10 @@ which is called k-space data. The other group is the sampling positions in 3-D
 space, which is sometimes called sampling space data. There are 5 variables from
 k-space, and 3 variables from the sampling space. Each pair of output is
 computed by using one sampling space point accumulating through the whole
-k-space. For the ``small" and ``medium" dataset in Table \ref{tab-1}, it has 15
+k-space. For the ``small" and ``large" dataset in Table \ref{tab:datasets}, it has 15
 K words at most for k-space data. The storage requirement is 60 K Bytes if data
 width is 32-bit. The whole k-space data can be stored into PLM. While for the
-``large" dataset, it is 20 M words, which is 80 M Bytes. For some potential
+``128*128*128" dataset, it is 20 M words, which is 80 M Bytes. For some potential
 unknown applications with even higher image resolution, the storage requirement
 for k-space data could be larger. The storage cost may be so high that we want
 to sacrifice speed. For a specific application, the designer should balance the
@@ -83,7 +83,7 @@ Since the FPGA can not process floating-point data directly, we need to do
 various data conversions in both the accelerator and the testbench. fpdata.hpp
 file defines functions used to do datatype conversions, including int2fp(),
 fp2int(), fp2bv(), bv2fp(). The data conversion flow is concluded in
-Fig.\ref{fig-data-convert}. In the testbench, data in floating-point type read
+Fig.\ref{fig:data-convert}. In the testbench, data in floating-point type read
 from files is converted to fixed-point representation, then converted to sc\_bv
 to be transported through the network-on-chip. In accelerator, data in sc\_bv
 type is converted to sc\_int to be stored in PLM. In computation phase, sc\_int
@@ -99,7 +99,7 @@ the golden output data. \\
 \captionsetup{justification=centering, format=hang}
 \includegraphics[width=0.85\columnwidth]{figures/data-conversion}
 \caption{Data conversion in testbench and accelerator}
-\label{fig-data-convert}
+\label{fig:data-convert}
 \end{figure}
 
 
@@ -107,48 +107,68 @@ the golden output data. \\
 \subsubsection{Functions}
 
 There are four functions essential to MRI-Q accelerator design. In load process,
-\textit{load\_data()} function is to load data into different PLMs. This
-function loads "len" number of words, starting with dma address "dma\_addr",
-into a PLM with name "array". In this function, dma\_info is configured first,
-including dma\_addr, dma\_length, and dma\_size. Then it stores data from
+\textit{dma\_read()} function is to load data into different PLMs. This
+function loads ``dma\_length" number of dma bursts, starting with dma 
+address ``dma\_index",
+into a PLM with name ``array". In this function, dma\_info is configured first,
+including dma\_index, dma\_length, and dma\_size. Then it stores data from
 dma\_read\_chnl to PLM "array".
 %
-$$\mathrm{load\_data(array[], dma\_addr, len)}$$
+$$\mathrm{dma\_read(array[], dma\_index, dma\_length)}$$
 %
-The second function is \textit{store\_data}, which is the counterpart of
-load\_data(). It sends data stored in "array" PLM through dma\_write\_chnl to
+The second function is \textit{dma\_write}, which is the counterpart of
+dma\_read(). It sends data stored in "array" PLM through dma\_write\_chnl to
 the testbench.
 %
-$$\mathrm{store\_data(array[], dma\_addr, len)}$$
+$$\mathrm{dma\_write(array[], dma\_index, dma\_length)}$$
 %
 The third function is \textit{computeQ} which is to compute a pair of output
 data with the whole k-space variables and one sampling space data point (x, y,
 z). In computeQ, there are three tasks being pipelined. The first task is
 reading data from PLM into registers kx, ky, kz, phiR, and phiI. The second task
-is to do the computation part. The third taks is to accumulate the intermediate
+is to do the computation part. The third task is to accumulate the intermediate
 results. After the loop finishes, it stores the accumulated results into two
 memory addresses pointed by pointers Qr and Qi.
 %
 $$\mathrm{computeQ(x, y, z, batch\_size\_k, pingpong\_x, sin\_table, *Qr, *Qi)}$$
 
-\begin{figure}[t]
-\centering
-\captionsetup{justification=centering, format=hang}
-\includegraphics[width=\columnwidth]{figures/computeQAlgorithm}
+
+\begin{algorithm}
+\caption{Pseudo-code of computeQ() function}
 \label{fig-data-convert}
-\end{figure}
+\begin{algorithmic} 
+\FOR{$(i=0;\quad i < numK; \quad  i += unroll\_factor)$}
+\STATE HLS\_LOOP\_PIPELINE
+\FOR{$(j=0;\quad j < unroll\_factor; \quad  j++)$}
+\STATE HLS\_LOOP\_UNROLL
+\STATE read from PLMs into registers 
+\STATE \quad kx[j],ky[j],kz[j],phiR[j],phiI[j]
+\ENDFOR
+\FOR{$(j=0;\quad j < unroll\_factor; \quad  j++)$}
+\STATE HLS\_LOOP\_UNROLL
+\STATE compute Qracc\_p[j], Qiacc\_p[j]
+\ENDFOR
+\FOR{$(j=0;\quad j < unroll\_factor; \quad  j++)$}
+\STATE HLS\_LOOP\_UNROLL
+\STATE Qracc += Qracc\_p[j]
+\STATE Qiacc += Qiacc\_p[j]
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
 
 The fourth function is \textit{mySine} which is to compute the sine value of an
 input.
 %
 $$\mathrm{mySinf(angle, sin\_table)}$$
 %
-The algorithm in Fig.\ref{fig-1} shows
+The algorithm in Fig.\ref{fig:algo} shows
 that it needs to compute triangular functions, sine and cosine. Since Stratus
 HLS doesn't provide sine and cosine function, we implemented a sine function
-\textit{mySine}. We firstly convert any input value to $0~\pi/2$ range, $x$,
-then find the closest data point to $x$ in the sin\_table, then do interpolation
-to get sin(x).  \\
+\textit{mySine}. We firstly convert any input value to $[0,  \pi/2]$ range, assuming the converted input is $x$.
+Then we find the closest data point to $x$ in the sin\_table, then do interpolation
+to get sin(x). We can get cos(x) through $cos(x) = sin(\pi/2 - x)$ \\
 
 \subsubsection{Processes}
 
@@ -186,14 +206,14 @@ the accelerator. In dump\_memory(), we convert and store the output sent from
 the accelerator to a pointer variable "out" with floating-point type. In
 validate(), we compare "out" with "gold" to verify the accelerator
 design. \\ \\ We define some helper functions in a separate folder, "common"
-folder. In the testbench design, we used init\_parameter() and
+folder. In the testbench design, we used init\_parameters() and
 validate\_buffer(), defined in utils.h file. These two helper functions are also
 used in software testing application code.\\
 
 ESP enables two testing on FGPA. One is bare metal application testing and the
 other is testing the accelerator with Linux OS. These two applications are in
 sw/ folder. \\ \\ For the bare metal application, we need to fill in code in
-init\_parameters(), init\_buf() and validate\_buf(). Since bare metal
+init\_buf and validate\_buf, and call function init\_parameters(). Since bare metal
 implementation doesn't support many C librabries, we can't use init\_buffer
 function in common/utils.h file. We generated testing input data beforehand and
 included it as a file. While in validate\_buf function, we first convert output
@@ -201,20 +221,15 @@ sent from the accelerator from fixed-point data to floating-point data by using
 fixed32\_to\_float() function provided by fixed\_point.h. Then use
 validate\_buffer() function from common/utils.h to validate the
 output. \\ \\ For linux application, we also only need to fill customized code
-in init\_parameters(), init\_buf(), and validate\_buf() function, same as the
+in init\_buf(), and validate\_buf() function, and call init\_parameters(), same as the
 bare-metal application except the init\_buf() function. Since we run the test
 program on linux OS, the init\_buf can use the function init\_buffer() in
 common/utils.h, which reads input data from file. We can also test the execution
 time of software program running on the processor tile of SoC which is
 prototyped on the FPGA. When running the linux application, we pass three
-arguments: name of input File, name of output file, and the answer to whether we
-want to run software program with "0" indicating "no" and "1" indicating "yes".
-
-
-In order to have a comparison between hardware implementation and software
-implementation, we need to run the software version on the processor of our SoC
-on FPGA. So I modified the software C code and put this implementation as a
-function call in the sw/linux/app/mriq.c code.\\
+arguments: name of input file, name of output file, and the answer to whether we
+want to run software program with "0" indicating "no" and "1" indicating "yes". Here 
+I modified the software C code and put this implementation as a function call in the sw/linux/app/mriq.c file.\\
 
 
 \subsection{Results}
@@ -226,51 +241,86 @@ expected behavior. Then we can generate RTL with "make mriq\_stratus-hls" and
 simulate RTL with the testbench. When we use "\#if" directive to generate
 multiple RTL implementations, the above three make targets won't work
 correclty. Then we need to use the debugging method provided on the ESP
-tutorial, which is to simulate one specific RTL with "make debug\_<RTL
-name>". For example, if we want to test A1 architecture with DMA width as 64 and
+tutorial, which is to simulate one specific RTL with "make debug\_$<RTL name>$". For example, if we want to test A1 architecture with DMA width as 64 and
 parallelism level as 4, we can run "make debug\_BASIC\_P4\_A1\_DMA64\_V". The
-running result is shown in Fig.\ref{fig-3}.  \\
+running result is shown in Listing~\ref{sim-rtl}.  \\
+\\
 
-\begin{figure}[ht]
-\centering
-\captionsetup{justification=centering, format=hang}
-\includegraphics[width=0.75\columnwidth]{figures/debug-sim-A1-4-4-2-2}
-\caption{RTL simulation (BASIC\_P4\_A1\_DMA64\_V)}
-\label{fig-3}
-\end{figure}
+\begin{lstlisting}[language=Python, caption=RTL simulation of P4\_A1\_DMA64
+  ,label={sim-rtl}]
+
+ncsim> Info: dma-controller: reset done
+Info: testbench: reset done
+Info: testbench: load memory completed
+Info: testbench: config done
+Info: testbench: @310 ns BEGIN - mriq
+Info: testbench: @4330n ns END -mriq
+Info: testbench: dump memory completed
+Info: testbench: validation passed!
+
+\end{lstlisting}
+
 
 After we finish the software testing program design, we can also simulate and
 test the bare metal application, and run the Linux application after booting the
 FPGA with Linux image. For the baremetal application, for example, we test
-"P4\_A0\_DMA64" RTL on FPGA, the result is shown in Fig.\ref{fig-barec-app}. If
+"P4\_A0\_DMA64" RTL on FPGA, the result is shown in Listing ~\ref{fpga-barec-app}. If
 we generated Linux image and registered the mriq\_stratus accelerator as a
 device driver, we can test the linux app on FGPA. The running result is shown in
-Fig.\ref{fig-linux-app}. Fig.\ref{fig-linux-app}-(a) shows that we also ran the
+Listing ~\ref{linux-app}. It shows that we also ran the
 software program on the SoC core, and the execution time is roughly 10 times
 slower than the hardware accelerator on a small testing data.
 
-\begin{figure}[t]
-\centering
-\captionsetup{justification=centering, format=hang}
-\includegraphics[width=0.85\columnwidth]{figures/barec-fpga}
-\caption{Running bare metal app on FPGA}
-\label{fig-barec-app}
-\end{figure}
+\begin{lstlisting}[language=Python, caption=Running baremetal app on FPGA, 
+    label=fpga-barec-app]
+ESP-Ariane first-stage boot loader
 
-\begin{figure}[t]
-\centering
-\begin{subfigure}{.5\columnwidth}
-\centering
-\includegraphics[width=\columnwidth]{figures/linux-run-sw}
-\caption{w/ running sw}
-\end{subfigure}%
-\begin{subfigure}{.5\columnwidth}
-\centering
-\includegraphics[width=\columnwidth]{figures/linux-app-wo-run-sw}
-\caption{w/o running sw}
-\end{subfigure}
-\caption{Running Linux app on FPGA}
-\label{fig-linux-app}
-\end{figure}
+Scanning device tree...
+[probe] sld, mriq_stratus.0 registered
+        Address    :  0x60010000    
+        Interrupt  :  6
+******************sld, mriq_stratus.0 ******************
+  memory buffer base-address = 0xa0100b60
+  ptable = 0xa0100d10
+  nchunk = 1
+  ------------------------
+  Generate input...
+  -> Non-coherent DMA
+  Start...
+  Done
+  validating...
+  ... PASS
+\end{lstlisting}
+
+
+\begin{lstlisting}[language=Python, caption=Running Linux app on FPGA, 
+    label={linux-app}]
+# ./mriq_stratus.exe test_small.bin test_small.out 1
+
+====== mriq_stratus.0 ======
+
+  .num_batch_k = 1
+  .batch_size_k = 16
+  .num_batch_x = 1
+  .batch_size_x = 4
+  
+  ** START HW TESTING **
+  > Test time: 17867520 ns
+    - mriq_stratus.0 time: 929680 ns
+    
+  ** DONE **
++ HW Test PASSED
+
+  ** START SW TESTING **
+  > Test time: 9095080 (ns)
+  
+  ** DONE **
++ SW PASS: SW EXEC MATCH GOLDEN OUTPUT
+
+HW Speedup is 9.78
+
+====== mriq_stratus.0 ======
+\end{lstlisting}
+
 
 \subsection{SoC design}
