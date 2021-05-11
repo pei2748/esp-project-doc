@@ -2,7 +2,12 @@
 \section{Progress}
 
 \subsection{Programmer View Implementation}
-The Parboil benchmark provides datasets to run the programmer view implementation, shown in Table \ref{tab-1}. For input data with image size "small" and "medium", the execution takes 4.7s and 18.7s running on the google server (socp03), respectively. But for the "large" dataset, the run time is 186685s $ \sim$ 2.2 days. The higher precision of the reconstructed image, the bigger the input data size, and the more computation.
+The Parboil benchmark provides datasets to run the programmer view implementation, 
+shown in Table \ref{tab-1}. For input data with image size ``small'' and ``large'', 
+the execution takes 4.7 s and 18.7 s running on the google server (socp03), respectively. 
+But for the ``128x128x128'' dataset, the run time is 186685 s $ \sim$ 2.2 days. The higher 
+precision of the reconstructed image, the bigger the input data size, and the more computation.
+
 \begin{table}[h!]
     \centering
     \begin{tabular}{c|c|c|c}
@@ -10,8 +15,8 @@ The Parboil benchmark provides datasets to run the programmer view implementatio
        name  & image size & \# of pixels & K-space dimension  \\
     \hline
         small  & 32*32*32 & 32768 & 3072 \\
-        medium & 64*64*64 & 262144 & 2048\\
-        large & 128*128*128 & 2097152 & 2097152\\
+        large & 64*64*64 & 262144 & 2048\\
+        128x128x128 & 128*128*128 & 2097152 & 2097152\\
         \hline
     \end{tabular}
     \caption{Datasets of MRIQ from Parboil Benchmark}
@@ -19,40 +24,76 @@ The Parboil benchmark provides datasets to run the programmer view implementatio
 \end{table}
 
 \subsection{Behavioral Simulation}
-I generated skeleton code from the ESP template with two configurable registers: numX and numK, which corresponds to the \# of pixels and K-space dimemsion in Table \ref{tab-1}. Then I edited the code in the following files:\\
 
+I generated skeleton code from the ESP template with two configurable registers: 
+numX and numK, which corresponds to the \# of pixels and K-space dimemsion in 
+Table \ref{tab-1}. Then I edited the code in the following files:\\
 \begin{itemize}
-
 \item \textbf{mriq/hw/src/fpdata.hpp} \\
-    Add fpdata.hpp to src/ folder. Typedef FPDATA. Defined functions used to do datatype conversions, for example, int2fp(), fp2int(), fp2bv(), bv2fp(). These functions are used in both the testbench and different processes of the accelerator design. In the testbench, data in floating-point type read from files is converted to fto fixed-point representation, then converted to sc\_bv to be transported through the network-on-chip. In accelerator, data in sc\_bv  type is converted to sc\_int to be stored in PLM. In computation phase, sc\_int data is converted to fixed -point representation.. After computation finished, The fixed-point data needs to be converted back to sc\_int in order to be stored in PLM. Then, it is further converted to sc\_bv to be transported back to the testbench for validation. In testbench, sc\_bv is converted to fixed-point representation. and further converted to floating point type to be compared with the golden output data.
+Add fpdata.hpp to src/ folder. Typedef FPDATA. Defined functions used to do datatype
+ conversions, for example, int2fp(), fp2int(), fp2bv(), bv2fp(). These functions are
+ used in both the testbench and different processes of the accelerator design. In the
+ testbench, data in floating-point type read from files is converted to fixed-point 
+representation, then converted to sc\_bv to be transported through the network-on-chip. 
+In accelerator, data in sc\_bv  type is converted to sc\_int to be stored in PLM. In 
+computation phase, sc\_int data is converted to fixed -point representation.. After 
+computation finished, The fixed-point data needs to be converted back to sc\_int in 
+order to be stored in PLM. Then, it is further converted to sc\_bv to be transported 
+back to the testbench for validation. In testbench, sc\_bv is converted to fixed-point 
+representation. and further converted to floating point type to be compared with the 
+golden output data.
 
-   %%%%%%%
-    \item \textbf{mriq/hw/src/mriq.hpp} \\
-    I declared 10 PLMs, with name plm\_x, plm\_y, plm\_z, plm\_kx, plm\_ky, plm\_kz,  plm\_phiR, plm\_phiI, plm\_Qr,  plm\_Qi, and declared functions \textit{mySinf}, \textit{computeQ}, \textit{load\_one\_data}, and \textit{store\_one\_data}, used in mriq.cpp.
+%%%%%%%%%%%%%%%%%%%%%
+\item \textbf{mriq/hw/src/mriq.hpp} \\
+I declared 10 PLMs, with name plm\_x, plm\_y, plm\_z, plm\_kx, plm\_ky, plm\_kz, 
+plm\_phiR, plm\_phiI, plm\_Qr,  plm\_Qi, and declared functions \textit{mySinf}, 
+\textit{computeQ}, \textit{load\_one\_data}, and \textit{store\_one\_data}, used
+ in mriq.cpp.
 
-  %%%%%%%%%%%%%%%%%%%%%
-    \item \textbf{mriq/hw/src/mriq.cpp} \\
+%%%%%%%%%%%%%%%%%%%%%
+\item \textbf{mriq/hw/src/mriq.cpp} \\
 Rewrote the processes \textit{load\_input},\textit{compute\_kernel}, \\
 and  \textit{store\_output}. 
-
+%%%%%%%%%%%%%%%%%%%%%
 \item \textbf{mriq/hw/src/mriq\_functions.hpp} \\
-    Wrote function \textit{ComputeQ} which is the key computation part of Q matrix, showed in Fig.\ref{fig-1}. Wrote function \textit{mySinf}, which is to compute sine. In sine function, first convert an input value to $0\sim \pi/2$ range, then find the closest data point in the sin\_table. For now, I use the interpolation method to get the sin(x). \textit{load\_one\_data} function is to load one variable into one PLM. Similarly, \textit{store\_one\_data} is to store one variable into one PLM.
+Wrote function \textit{ComputeQ} which is the key computation part of Q matrix, 
+showed in Fig.\ref{fig-1}. Wrote function \textit{mySinf}, which is to compute 
+sine. In sine function, first convert an input value to $0\sim \pi/2$ range, 
+then find the closest data point in the sin\_table. For now, I use the interpolation 
+method to get the sin(x). \textit{load\_one\_data} function is to load one variable
+ into one PLM. Similarly, \textit{store\_one\_data} is to store one variable into 
+one PLM.
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \item \textbf{mriq/hw/tb/system.hpp} \\
-    Declared the paths for input file and golden output file. Modified the SC\_HAS\_PROCESS constructor. Declared parameters and functions used in system.cpp file.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \textbf{mriq/hw/tb/system.hpp} \\
+Declared the paths for input file and golden output file. Modified the 
+SC\_HAS\_PROCESS constructor. Declared parameters and functions used in 
+system.cpp file.
 
-    \item \textbf{mriq/hw/tb/system.cpp} \\
-    Rewrote functions \textbf{\textit{load\_memory}}, \textbf{\textit{dump\_memory}}, and \textbf{\textit{validate}}. Added function \textbf{\textit{inputData}} to read input data from file, and \textbf{\textit{outputData}} to read golden output data from file.
+\item \textbf{mriq/hw/tb/system.cpp} \\
+Rewrote functions \textbf{\textit{load\_memory}}, \textbf{\textit{dump\_memory}},
+ and \textbf{\textit{validate}}. Added function \textbf{\textit{inputData}} to 
+read input data from file, and \textbf{\textit{outputData}} to read golden 
+output data from file.
 
-    \item \textbf{mriq/hw/tb/sc\_main.cpp} \\
-    Added the paths and names of the input file and the golden output file.
+\item \textbf{mriq/hw/tb/sc\_main.cpp} \\
+Added the paths and names of the input file and the golden output file.
 \end{itemize}
 
-Behavioral simulation succeeded when running the whole dataset (32*32*32). It takes a few hours to run since the fixed-point datatype is not native to c/c++. 
+Behavioral simulation succeeded when running the whole dataset (32*32*32). 
+It takes a few hours to run since the fixed-point datatype is not native to c/c++. 
 
 \subsection{RTL generation}
-I have generated RTL successfully by running make mriq-hls in the working folder. In this process, all the print sentences in the files in the src/ folder should be deleted to avoid that the ESP\_REPORT causes errors in this process. In every for-loop, there should be a wait() sentence after the "for statement" to allow Stratus to perform loop unrolling.
+I have generated RTL successfully by running ``make mriq\_stratus-hls'' in the working
+ folder. In this process, all the print sentences in the files in the src/ 
+folder should be deleted to avoid that the ESP\_REPORT causes errors in this 
+process. In every for-loop, there should be a wait() sentence after the ``for
+-statement'' to allow Stratus to perform loop unrolling.
 
 \subsection{RTL Simulation}
-By running an accelerated simulation method, I have tested the generated RTL without error. Instead of computing the whole dataset, which has 32K pixels, I edited the code to compute only the first 4 pixels in the input dataset and reduced the k-space size from 3K to 16. The simulation of RTL succeeded. My accelerating method of simulation is to edit the default value of (numX, numK) from (32768, 3072) to (4, 16) both in tb/system.hpp and src/mriq\_conf\_info.hpp. 
+By running an accelerated simulation method, I have tested the generated RTL
+ without error. Instead of computing the whole dataset, which has 32K pixels, 
+I edited the code to compute only the first 4 pixels in the input dataset and
+ reduced the k-space size from 3K to 16. The simulation of RTL succeeded. 
+My accelerating method of simulation is to edit the default value of (numX, numK) 
+from (32768, 3072) to (4, 16) both in tb/system.hpp and src/mriq\_conf\_info.hpp. 

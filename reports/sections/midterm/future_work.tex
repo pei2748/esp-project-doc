@@ -1,26 +1,50 @@
 \section{Future Work}
 
 \subsection{Accelerator Integration}
+
 Finish the accelerator integration and prototpye on FPGA.
 
 \subsection{Design Space Exploration}
-There are two directions for design space exploration. The first is to reduce latency. The optimization methods I plan to do is as follows:
+
+There are two directions for design space exploration. The first is to reduce
+ latency. The optimization methods I plan to do is as follows:
+
 \begin{enumerate}
-\setlength\itemsep{-0.15em}
+
 \item Loop unroll and pipeline.
+
 \item Constrain latency.
+
 \item Reduce fixed-point precision.
+
 \item Add more ports to PLM to increase parallelism.
+
 \item Optimize compute function. Optimize the computation of sine and cosine functions.
-\end{enumerate}
-The second direction is to reduce area. The following are the methods I plan to try.
-\begin{enumerate}
-\setlength\itemsep{-0.15em}
-    \item Use ping pong buffers to load a portion of data to do computation. Load all the frequency-related variables (kx, ky, kz, phiR, phiZ) into PLM, but only load a portion of pixels (x,y,z). 
-    \item In place storage of output. 
-    \item Use different types of PLM blocks. frequency-related variables are stored in one type of PLM with size numK. The pixel variables (x,y,z) could be stored in a much smaller PLM block if using ping-pong buffers. 
-    \item Reduce sine look-up table.  
-    \item Reduce fixed-point storage. For now, data size is 32 bits. Later, I will try to reduce this data width while guaranteeing the computation accuracy. A smaller number of bits requires smaller storage capacity.
+
 \end{enumerate}
 
-I will generate a Pareto curve of my designs. Then, I will compare the FPGA running time with the software running time on FPGA to evaluate the performance of the accelerator.
+The second direction is to reduce area. The following are the methods I plan to try.
+
+\begin{enumerate}
+
+    \item Use ping pong buffers to load a portion of data to do computation. 
+      Load all the frequency-related variables (kx, ky, kz, phiR, phiZ) into PLM,
+      but only load a portion of pixels (x,y,z). 
+
+    \item In place storage of output. 
+
+    \item Use different types of PLM blocks. frequency-related variables are 
+      stored in one type of PLM with size numK. The pixel variables (x,y,z) 
+      could be stored in a much smaller PLM block if using ping-pong buffers. 
+
+    \item Reduce sine look-up table.  
+
+    \item Reduce fixed-point storage. For now, data size is 32 bits. Later, I 
+      will try to reduce this data width while guaranteeing the computation 
+      accuracy. A smaller number of bits requires smaller storage capacity.
+
+\end{enumerate}
+
+I will generate a Pareto curve of my designs. Then, I will compare the FPGA 
+running time with the software running time on FPGA to evaluate the performance 
+of the accelerator.

@@ -1,9 +1,30 @@
 \section{Specification}
-The algorithm for computing MRI-Q matrix is shown in Listing.~\ref{algo}~\cite{stone2008accelerating}. We want to accelerate the whole computation, mainly by loop unrolling and pipelining the inner for-loop. The programmer view algorithm C code and input dataset come from the Parboil benchmark suit~\cite{Rub1}. In this project, we will design accelerators which can accomodate the three datasets provided by Parboil benchmark, and make it capable of dealing with input images with arbitray size.
+The algorithm for computing MRI-Q matrix is shown in Listing.~\ref{algo}
+~\cite{stone2008accelerating}. We want to accelerate the whole computation, 
+mainly by loop unrolling and pipelining the inner for-loop. The programmer 
+view algorithm C code and input dataset come from the Parboil benchmark 
+suite~\cite{stratton2012parboil}. In this project, we will design 
+accelerators which can accomodate the three datasets provided by Parboil 
+benchmark, and make it capable of dealing with input images with arbitray size.
 
 
 \subsection{Assessment}
-We aim to design accelerators which can implement Q-matrix computation for any arbitrary input image sizes. The first goal is correctness. The Q-matrix computed by our accelerator should match the Q-matrix computed by software program. We calculate the difference between every output and its golden output, and deem it as a match when the difference is less than a certain threshold, otherwise it is an error. And we also set an error\_rate. If it is within a specified small value, we deem that our accelerator meet the correctness goal. The second goal is performance. We will measure the acceleration of our accelerator compared to its software execution running on FPGA board. We want our accelerators can be integrated with both Ariane core and Leon3 core. The generated RTL through Stratus HLS can be integrated and prototyped on FPGA. We will design both baremetal application and Linux application, the accelerator should pass both tests. At last we want to collect speedup data which indicates the acceleration effect. In achieving the second goal, we will do some amount of design space exploration, which includes designing accelerators with different area and latency trade-offs. 
+We aim to design accelerators which can implement Q-matrix computation for
+arbitrary input image size. The first goal is correctness. The Q-matrix 
+computed by our accelerator should match the Q-matrix computed by software 
+program. We calculate the difference between every output and its golden 
+output, and deem it as a match when the difference is less than a certain
+ threshold, otherwise it is an error. And we also set an error\_rate. If 
+it is within a specified small value, we deem that our accelerator meet 
+the correctness goal. The second goal is performance. We will measure the 
+acceleration of our accelerator compared to its software execution running
+ on FPGA board. We want our accelerators can be integrated with both Ariane
+ core and Leon3 core. The generated RTL through Stratus HLS can be integrated
+ and prototyped on FPGA. We will design both baremetal application and Linux 
+application, the accelerator should pass both tests. At last we want to 
+collect speedup data which indicates the acceleration effect. In achieving 
+the second goal, we will do some amount of design space exploration, which 
+includes designing accelerators with different area and latency trade-offs. 
 
 \begin{lstlisting}[language=C, caption=Algorithm for computing MRI Q matrix, label=algo]
 for (m = 0; m < M; m++) {
@@ -25,30 +46,38 @@ for (n = 0; n < 8*N; n++) {
 \subsection{Milestones}\label{sec:arch}
 \label{sec:milestones}
 
-\vspace{-0.1in}
-\begin{enumerate}
-\setlength\itemsep{-0.15em}
-  \item Analysis of the algorithm and the programmer's implementation in C (by Feb. 19)
-  \item Learning two tutorials: "How to design an accelerator in SystemC (Cadence Stratus HLS)" and "How to design a single-core SoC"\cite{esp1}. (by Feb. 28)
-  \item High-Level-Synthesis implementation in SystemC (by Mar. 11)
-  \vspace{-2mm}
-       \begin{itemize}
-            \item Transform programmer view algorithm to HLS-ready SystemC
-            \item Behavioral simulation
-       \end{itemize}
 
-  \item Baremetal application and linux application design. Evaluation on an FPGA platform (by Mar. 25)
-  \item Mid-term presentation and report (by Mar. 25)
-  \item Initial Design Space Exploration (by Apr. 15)
-  \item Enhanced Design Space Exploration (by Apr. 22)
-  \item Final refinement and analysis (by May 5)
-  \item Design the same accelerator with Vivado HLS flow.
-  \item Final presentation ($\sim$ May 11) and report ($\sim$ May 15)
+\begin{enumerate}
+
+\item Project proposal (by Feb. 5).
+
+\item Reference application (by Feb. 12).
+
+\item ESP tutorials: \emph{``How to design a single-core SoC''}, and 
+  \emph{``How to design an accelerator in SystemC (Cadence Stratus HLS)''} (by Feb. 19).
+
+\item Skeleton generation for accelerator and test apps (by Feb. 19)
+
+\item Accelerator and test apps customization (by Mar. 11)
+
+\item SoC evaluation with RTL simulation (by Mar. 18)
+
+\item SoC evaluation with FPGA prototyping (by Mar. 25)
+
+\item Midterm presentation and report (by Mar. 25)
+
+\item DSE and optimization (by May 13)
+
+\item Final presentation and report (by May 13)
+
 \end{enumerate}
+
 
 \subsection{Critical Aspects}
 \begin{enumerate}
-\setlength\itemsep{-0.15em}
+
 \item Implement sine and cosine functions in for-loop.
+
 \item Try different methods of optimization to reduce latency or decrease area.
+
 \end{enumerate}

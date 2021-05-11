@@ -1,5 +1,7 @@
 \section{Specification}
-The algorithm for computing the MRI Q matrix, shown in Fig.~\ref{fig-1}. The main accelerating direction is to unroll the for-loops. The programmer view algorithm C code and input data set come from the Parboil benchmark suite~\cite{Rub1}.
+The algorithm for computing the MRI Q matrix, shown in Fig.~\ref{fig-1}. The main 
+accelerating direction is to unroll the for-loops. The programmer view algorithm
+ C code and input data set come from the Parboil benchmark suite~\cite{stratton2012parboil}.
 
 
 %% In case you need to insert one or multiple figures with more complex layout,
@@ -21,29 +23,36 @@ The algorithm for computing the MRI Q matrix, shown in Fig.~\ref{fig-1}. The mai
 %% \end{figure}
 
 \subsection{Assessment}
-The goal of the assessment is to return correct Q matrix implemented on FPGA and compare the executing time of CPU and the accelerator designed. Also, several different designs will be implemented on FPGA to explore the design space.
+The goal of the assessment is to return correct Q matrix implemented on FPGA 
+and compare the executing time of CPU and the accelerator designed. Also, 
+several different designs will be implemented on FPGA to explore the design space.
 
 \subsection{Milestones}\label{sec:arch}
 \label{sec:milestones}
 
-\vspace{-0.1in}
 \begin{enumerate}
-\setlength\itemsep{-0.15em}
-  \item Analysis of the algorithm and the programmer's implementation in C (by Feb. 19)-- Done!
-  \item Learning two tutorials: "How to design an accelerator in SystemC (Cadence Stratus HLS)" and "How to design a single-core SoC"\cite{esp1}. (by Feb. 28) -- Done!
-  \item High-Level-Synthesis implementation in SystemC (by Mar. 11)-- Done!
-  \vspace{-2mm}
-       \begin{itemize}
-            \item Transform programmer view algorithm to HLS-ready SystemC
-            \item Initial HLS using the Cadence Stratus tool
-       \end{itemize}
 
-  \item Evaluation on an FPGA platform (by Mar. 25)
-  \item Mid-term presentation and report (by Mar. 25)
-  \item Initial Design Space Exploration (by Apr. 15)
-  \item Enhanced Design Space Exploration (by Apr. 22)
-  \item Final refinement and analysis (by May 5)
-  \item Final presentation ($\sim$ May 11) and report ($\sim$ May 15)
+\item Project proposal (by Feb. 5). -- Done!
+
+\item Reference application (by Feb. 12). -- Done!
+
+\item ESP tutorials: \emph{``How to design a single-core SoC''}, and \emph{``How
+  to design an accelerator in SystemC (Cadence Stratus HLS)''} (by Feb. 19). -- Done!
+
+\item Skeleton generation for accelerator and test apps (by Feb. 19) -- Done!
+
+\item Accelerator and test apps customization (by Mar. 11) -- Done!
+ 
+\item SoC evaluation with RTL simulation (by Mar. 18) -- Done!
+
+\item SoC evaluation with FPGA prototyping (by Mar. 25) -- Done!
+
+\item Midterm presentation and report (by Mar. 25)
+
+\item DSE and optimization (by May 13)
+
+\item Final presentation and report (by May 13)
+
 \end{enumerate}
 
 \subsection{Critical Aspects}
